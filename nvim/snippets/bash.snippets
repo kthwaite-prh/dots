@@ -4,3 +4,39 @@ snippet prex Print, then execute
 	  echo "+ $@" >&2 
 	  "$@" 
 	}
+
+snippet log Pretty logging
+	GREEN=$'\e[0;32m'
+	YELLOW=$'\e[0;33m'
+	RED=$'\e[0;31m'
+	RESET=$'\e[0m'
+
+    # Helper function to log messages
+	function log {
+		MSG=$1
+		COLOUR=$2
+		echo -e "${COLOUR}$(date +'%Y-%m-%d %H:%M:%S')] ${MSG}${RESET}"
+	}
+
+	function info {
+		log "$1" "$GREEN"
+	}
+
+	function warn {
+		log "$1" "$YELLOW"
+	}
+
+	function error {
+		log "$1" "$RED"
+	}
+	function error_exit {
+		echo -e "${RED}$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $1${RESET}" >&2
+		exit 1
+	}
+
+snippet shbang Shebang with error handling
+	#!/bin/bash
+
+	set -o errexit
+	set -o nounset
+	set -o pipefail
