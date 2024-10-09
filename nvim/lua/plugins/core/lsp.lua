@@ -46,7 +46,7 @@ local ls_opts = {
 	["bashls"] = function(opts)
 		opts.filetypes = { "sh", "bash", "zsh" }
 	end,
-	["tsserver"] = function(opts)
+	["ts_ls"] = function(opts)
 		opts.cmd = { "yarn", "typescript-language-server", "--stdio" }
 	end,
 	["eslintls"] = function(opts)
@@ -106,6 +106,17 @@ return {
 					},
 				},
 			},
+			{
+				"SmiteshP/nvim-navbuddy",
+				dependencies = {
+					"neovim/nvim-lspconfig",
+					"SmiteshP/nvim-navic",
+					"MunifTanjim/nui.nvim",
+					"numToStr/Comment.nvim", -- Optional
+					"nvim-telescope/telescope.nvim", -- Optional
+				},
+				opts = { lsp = { auto_attach = true } },
+			},
 			"williamboman/mason-lspconfig.nvim",
 			"nvimtools/none-ls.nvim",
 		},
@@ -142,6 +153,7 @@ return {
 			null_ls.setup({
 				sources = {
 					null_ls.builtins.formatting.stylua,
+					null_ls.builtins.formatting.biome,
 					null_ls.builtins.formatting.prettier,
 				},
 			})
@@ -154,13 +166,7 @@ return {
 		},
 	},
 	{
-		"SmiteshP/nvim-navbuddy",
-		dependencies = {
-			"neovim/nvim-lspconfig",
-			"SmiteshP/nvim-navic",
-			"MunifTanjim/nui.nvim",
-			"numToStr/Comment.nvim", -- Optional
-			"nvim-telescope/telescope.nvim", -- Optional
-		},
+		"lbrayner/vim-rzip",
+		ft = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
 	},
 }
