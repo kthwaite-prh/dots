@@ -38,6 +38,16 @@ M.inoremap = function(capt, repl, opts)
 	vim.keymap.set("i", capt, repl, opts)
 end
 
+---Convenience function to create a visual mode keymap
+---@param capt string # keymap capture
+---@param repl string|function # keymap replacement
+---@param opts? table # options passed to nvim_set_keymap
+M.vnoremap = function(capt, repl, opts)
+	opts = opts or {}
+	opts["noremap"] = true
+	vim.keymap.set("v", capt, repl, opts)
+end
+
 M.noremap = function(capt, repl, opts)
 	opts = opts or {}
 	opts["noremap"] = true
@@ -65,6 +75,7 @@ M.default_ignore_filetypes = {
 	"noice",
 	"none",
 	"terminal",
+	"oil",
 }
 
 return M

@@ -1,6 +1,7 @@
 local util = require("core.utility")
 local au = util.au
 local n = util.nnoremap
+local v = util.vnoremap
 
 -- ## autocommands ##
 
@@ -71,3 +72,7 @@ n("<leader>tg", ":Telescope live_grep<cr>", { desc = "Telescope live_grep." })
 n("<leader>tf", ":Telescope find_files<cr>", { desc = "Telescope find_files." })
 n("<leader>tb", ":Telescope buffers<cr>", { desc = "Telescope buffers." })
 n("<leader>tr", ":Telescope registers<cr>", { desc = "Telescope registers." })
+
+-- # k8s helpers
+n("<leader>b64d", ". ! base64 -d<CR>", { desc = "Base64 decode current line" })
+v("<leader>b64e", "'<,'> ! base64<CR>", { desc = "Base64 encode current selection" })
