@@ -1,5 +1,9 @@
+
+
 # Create directory structure for Python packages, with verbosity and help text.
 pytouch() {
+    set -o pipefail
+    set -o errexit
     # Show help text if -h or --help is passed
     if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
         cat << EOF
@@ -28,34 +32,34 @@ EOF
     # Process each module argument
     for module in "$@"; do
         # Initialize the base path
-        path=""
+        mod_path=""
 
         # Split the module string by dots into an array
-        IFS='.' read -ra parts <<< "$module"
+        parts=(${(@s/./)module})
 
         # Iterate over each part to build the directory structure
         for part in "${parts[@]}"; do
             # Append the current part to the path
-            if [ -z "$path" ]; then
-                path="$part"
+            if [ -z "$mod_path" ]; then
+                mod_path="$part"
             else
-                path="$path/$part"
+                mod_path="$mod_path/$part"
             fi
 
             # Create the directory if it doesn't exist, and be verbose about it
-            if [ ! -d "$path" ]; then
-                mkdir -p "$path"
-                echo "Created directory: $path"
+            if [ ! -d "$mod_path" ]; then
+                mkdir -p "$mod_path"
+                echo "Created directory: $mod_path"
             else
-                echo "Directory already exists: $path"
+                echo "Directory already exists: $mod_path"
             fi
 
             # Create an empty __init__.py file inside the directory, and be verbose about it
-            if [ ! -f "$path/__init__.py" ]; then
-                touch "$path/__init__.py"
-                echo "Created file: $path/__init__.py"
+            if [ ! -f "$mod_path/__init__.py" ]; then
+                touch "$mod_path/__init__.py"
+                echo "Created file: $mod_path/__init__.py"
             else
-                echo "File already exists: $path/__init__.py"
+                echo "File already exists: $mod_path/__init__.py"
             fi
         done
     done
@@ -101,3 +105,40 @@ EOF
             fi
     fi
 }
+
+# Check current directory for a .venv and pyproject.toml.
+#  - If found, deactivate any active venv (if different) and activate the local one.
+#  - If not found and a venv is active, deactivate it.
+function auto_activate_venv() {
+    local target_venv="$PWD/.venv"
+    if [ -d ".venv" ] && [ -f "pyproject.toml" ]; then
+        if [[ "$VIRTUAL_ENV" != "$target_venv" ]]; then
+
+            if [[ -n "$VIRTUAL_ENV" ]]; then
+                # Deactivating previously active venv
+                if type deactivate &>/dev/null; then
+                    deactivate
+                else
+                    echo "Warning: 'deactivate' function not found."
+                fi
+            fi
+            # Activating venv from $target_venv
+            source "$target_venv/bin/activate"
+        fi
+    else
+        # Case 2: No local venv; if one is active, then deactivate.
+        if [[ -n "$VIRTUAL_ENV" ]]; then
+            # No local venv found; deactivating active venv
+            if type deactivate &>/dev/null; then
+                deactivate
+            else
+                echo "Warning: 'deactivate' function not found."
+            fi
+        fi
+    fi
+}
+
+autoload -Uz add-zsh-hook
+add-zsh-hook chpwd auto_activate_venv
+# Run auto_activate_venv on startup
+auto_activate_venv
